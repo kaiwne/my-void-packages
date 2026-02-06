@@ -1,0 +1,39 @@
+name: Build and Release packages
+
+on:
+  workflow_dispatch:
+  push:
+    paths:
+      - 'srcpkgs/**'
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    container:
+      image: ghcr.io/void-linux/void-glibc-full:20260201r1
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          repo: void-linux/void-packages
+          ref: master
+    
+      - name: Build
+        run: |
+          ./xbps-src binary-bootstrap
+          echo "XBPS_ALLOW_RESTRICTED=yes" >> etc/conf
+          ./xbps-src pkg zen-browser
+
+      - name: Release
+        uses: softprops/action-gh-release@v2
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          tag_name: workflow-${{ github.run_number }}
+          files: |
+            ./hostdir/binpkgs/*.xbps
+            ./hostdir/binpkgs/*.sha256sum
+            ./hostdir/binpkgs/*.sha512sum
+            ./hostdir/binpkgs/*.sig2
+            ./hostdir/binpkgs/*repodata

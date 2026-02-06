@@ -13,14 +13,21 @@ jobs:
       image: ghcr.io/void-linux/void-glibc-full:20260201r1
 
     steps:
-      - name: Checkout
+      - name: Checkout Void Packages
         uses: actions/checkout@v4
         with:
           repo: void-linux/void-packages
-          ref: master
+          path: void-packages
+
+      - name: Checkout My Custom Packages
+        uses: actions/checkout@v4
+        with:
+          path: my-repo
     
       - name: Build
         run: |
+          cd void-packages
+          cp -R ../my-repo/srcpkgs/zen-browser srcpkgs/
           ./xbps-src binary-bootstrap
           echo "XBPS_ALLOW_RESTRICTED=yes" >> etc/conf
           ./xbps-src pkg zen-browser
@@ -33,7 +40,3 @@ jobs:
           tag_name: workflow-${{ github.run_number }}
           files: |
             ./hostdir/binpkgs/*.xbps
-            ./hostdir/binpkgs/*.sha256sum
-            ./hostdir/binpkgs/*.sha512sum
-            ./hostdir/binpkgs/*.sig2
-            ./hostdir/binpkgs/*repodata

@@ -27,6 +27,9 @@ jobs:
       - name: Build
         run: |
           cp -R my-repo/srcpkgs/zen-browser srcpkgs/
+          cd void-packages
+          ls -a
+          pwd
           ./xbps-src binary-bootstrap
           echo "XBPS_ALLOW_RESTRICTED=yes" >> etc/conf
           ./xbps-src pkg zen-browser

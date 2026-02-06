@@ -17,7 +17,7 @@ jobs:
         uses: actions/checkout@v4
         with:
           repo: void-linux/void-packages
-          path: void-packages
+          path: .
 
       - name: Checkout My Custom Packages
         uses: actions/checkout@v4
@@ -26,8 +26,7 @@ jobs:
     
       - name: Build
         run: |
-          cd void-packages
-          cp -R ../my-repo/srcpkgs/zen-browser srcpkgs/
+          cp -R my-repo/srcpkgs/zen-browser srcpkgs/
           ./xbps-src binary-bootstrap
           echo "XBPS_ALLOW_RESTRICTED=yes" >> etc/conf
           ./xbps-src pkg zen-browser
